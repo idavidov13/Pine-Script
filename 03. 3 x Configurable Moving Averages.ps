@@ -36,3 +36,9 @@ MA3 = switch MA3Type
 plot(MA1, color=color.white, linewidth=3)
 plot(MA2, color=color.green, linewidth=3)
 plot(MA3, color=color.red, linewidth=5)
+
+// Create labels at the end of each moving average line
+if (bar_index == last_bar_index)  // Ensure label only appears at the last bar
+    label.new(bar_index, MA1, str.tostring(MA1Period), color=color.white, style=label.style_label_down, textcolor=color.black, size=size.normal)
+    label.new(bar_index, MA2, str.tostring(MA2Period), color=color.green, style=label.style_label_down, textcolor=color.black, size=size.normal)
+    label.new(bar_index, MA3, str.tostring(MA3Period), color=color.red, style=label.style_label_down, textcolor=color.black, size=size.normal)
