@@ -1,0 +1,87 @@
+// This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © ivandavidov13
+
+//@version=5
+
+indicator(shorttitle="TManyMA Crossovers - ST5", title="Triple Many Moving Averages Improved", overlay=true)
+
+// Input parameters for moving averages
+MA1Period = input.int(20, title="MA1 Period")
+MA1Type = input.string(title="MA1 Type", defval="SMA", options=["RMA", "SMA", "EMA", "WMA", "HMA", "DEMA", "TEMA"])
+MA1Source = input.source(defval=close, title="MA1 Source")
+MA1Visible = input.bool(defval=true, title="MA1 Visible") 
+
+MA2Period = input.int(50, title="MA2 Period")
+MA2Type = input.string(title="MA2 Type", defval="SMA", options=["RMA", "SMA", "EMA", "WMA", "HMA", "DEMA", "TEMA"])
+MA2Source = input.source(defval=close, title="MA2 Source")
+MA2Visible = input.bool(defval=true, title="MA2 Visible") 
+
+MA3Period = input.int(200, title="MA3 Period")
+MA3Type = input.string(title="MA3 Type", defval="SMA", options=["RMA", "SMA", "EMA", "WMA", "HMA", "DEMA", "TEMA"])
+MA3Source = input.source(defval=close, title="MA3 Source")
+MA3Visible = input.bool(defval=true, title="MA3 Visible") 
+
+ShowCrosses = input.bool(defval=true, title="Show Crosses")
+
+// Function to calculate the moving average based on the type
+f_ma(_source, _period, _type) =>
+    switch _type
+        "SMA" => ta.sma(_source, _period)
+        "EMA" => ta.ema(_source, _period)
+        "WMA" => ta.wma(_source, _period)
+        "RMA" => ta.rma(_source, _period)
+        "HMA" => ta.wma(2 * ta.wma(_source, _period / 2) - ta.wma(_source, _period), math.round(math.sqrt(_period)))
+        "DEMA" =>
+            ema1 = ta.ema(_source, _period)
+            2 * ema1 - ta.ema(ema1, _period)
+        "TEMA" =>
+            ema1 = ta.ema(_source, _period)
+            3 * (ema1 - ta.ema(ema1, _period)) + ta.ema(ta.ema(ema1, _period), _period)
+
+// Calculate moving averages
+MA1 = f_ma(MA1Source, MA1Period, MA1Type)
+MA2 = f_ma(MA2Source, MA2Period, MA2Type)
+MA3 = f_ma(MA3Source, MA3Period, MA3Type)
+
+// Plotting crossover/unders for all combinations of crosses
+if ShowCrosses and MA1Visible and MA2Visible and ta.crossunder(MA1, MA2)
+    lun1 = label.new(bar_index, na, str.tostring(MA1Period) + ' ' + MA1Type + ' crossed under ' + str.tostring(MA2Period) + ' ' + MA2Type,
+      color=color.red,
+      textcolor=color.red,
+      style=label.style_xcross, size=size.small)
+    label.set_y(lun1, MA1)
+if ShowCrosses and MA1Visible and MA2Visible and ta.crossover(MA1, MA2)
+    lup1 = label.new(bar_index, na, str.tostring(MA1Period) + ' ' + MA1Type + ' crossed over ' + str.tostring(MA2Period) + ' ' + MA2Type,
+      color=color.green,
+      textcolor=color.green,
+      style=label.style_xcross, size=size.small)
+    label.set_y(lup1, MA1)
+if ShowCrosses and MA1Visible and MA3Visible and ta.crossunder(MA1, MA3)
+    lun2 = label.new(bar_index, na, str.tostring(MA1Period) + ' ' + MA1Type + ' crossed under ' + str.tostring(MA3Period) + ' ' + MA3Type,
+      color=color.red,
+      textcolor=color.red,
+      style=label.style_xcross, size=size.small)
+    label.set_y(lun2, MA1)
+if ShowCrosses and MA1Visible and MA3Visible and ta.crossover(MA1, MA3)
+    lup2 = label.new(bar_index, na, str.tostring(MA1Period) + ' ' + MA1Type + ' crossed over ' + str.tostring(MA3Period) + ' ' + MA3Type,
+      color=color.green,
+      textcolor=color.green,
+      style=label.style_xcross, size=size.small)
+    label.set_y(lup2, MA1)
+if ShowCrosses and MA2Visible and MA3Visible and ta.crossunder(MA2, MA3)
+    lun3 = label.new(bar_index, na, str.tostring(MA2Period) + ' ' + MA2Type + ' crossed under ' + str.tostring(MA3Period) + ' ' + MA3Type,
+      color=color.red,
+      textcolor=color.red,
+      style=label.style_xcross, size=size.small)
+    label.set_y(lun3, MA2)
+if ShowCrosses and MA2Visible and MA3Visible and ta.crossover(MA2, MA3)
+    lup3 = label.new(bar_index, na, str.tostring(MA2Period) + ' ' + MA2Type + ' crossed over ' + str.tostring(MA3Period) + ' ' + MA3Type,
+      color=color.green,
+      textcolor=color.green,
+      style=label.style_xcross, size=size.small)
+    label.set_y(lup3, MA2)
+
+// Plot the moving averages on the chart
+plot(MA1Visible ? MA1 : na, color=color.white, linewidth=3)
+plot(MA2Visible ? MA2 : na, color=color.green, linewidth=3)
+plot(MA3Visible ? MA3 : na, color=color.red, linewidth=4)
