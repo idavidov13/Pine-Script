@@ -1,0 +1,38 @@
+//@version=5
+// This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © ivandavidov13
+
+indicator(shorttitle="3xConfigurable MA", title="Triple Many Moving Averages", overlay=true)
+
+// MA#Period is a variable used to store the indicator lookback period. In this case, from the input.
+MA1Period = input.int(50, title="MA1 Period")
+MA1Type = input.string(title="MA1 Type", defval="SMA", options=["RMA", "SMA", "EMA", "WMA"])
+MA2Period = input.int(100, title="MA2 Period")
+MA2Type = input.string(title="MA2 Type", defval="SMA", options=["RMA", "SMA", "EMA", "WMA"])
+MA3Period = input.int(200, title="MA3 Period")
+MA3Type = input.string(title="MA3 Type", defval="SMA", options=["RMA", "SMA", "EMA", "WMA"])
+
+// Use the `switch` statement for cleaner conditional logic in version 5
+MA1 = switch MA1Type
+    "SMA" => ta.sma(close, MA1Period)
+    "EMA" => ta.ema(close, MA1Period)
+    "WMA" => ta.wma(close, MA1Period)
+    "RMA" => ta.rma(close, MA1Period)
+    
+MA2 = switch MA2Type
+    "SMA" => ta.sma(close, MA2Period)
+    "EMA" => ta.ema(close, MA2Period)
+    "WMA" => ta.wma(close, MA2Period)
+    "RMA" => ta.rma(close, MA2Period)
+
+MA3 = switch MA3Type
+    "SMA" => ta.sma(close, MA3Period)
+    "EMA" => ta.ema(close, MA3Period)
+    "WMA" => ta.wma(close, MA3Period)
+    "RMA" => ta.rma(close, MA3Period)
+
+// plot - This will draw the information on the chart
+// The `plot` function remains the same
+plot(MA1, color=color.white, linewidth=3)
+plot(MA2, color=color.green, linewidth=3)
+plot(MA3, color=color.red, linewidth=5)
